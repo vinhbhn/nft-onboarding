@@ -8,7 +8,7 @@ import { Keys } from './components/Keys';
 import { Gallery } from './components/Gallery';
 
 import Avatar from 'url:./img/avatar.jpg';
-import Kats from 'url:./img/ethkats.svg';
+import NearLogo from 'url:./img/near_icon.svg';
 
 import './App.scss';
 
@@ -38,7 +38,7 @@ const App = () => {
     
 	return <>
 		{ loading && <div className="loading">
-			<img src={Kats} />
+			<img src={NearLogo} />
 		</div>
 		}
         

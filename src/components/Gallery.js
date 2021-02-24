@@ -68,10 +68,14 @@ export const Gallery = ({ near, signedIn, contractAccount, account, localKeys, l
 			methods = accessKeyMethods;
 		}
 		const contract = getContract(appAccount, methods);
-		await contract.set_price({
-			token_id: token_id,
-			amount: parseNearAmount(amount)
-		}, GAS);
+		try {
+            await contract.set_price({
+                token_id: token_id,
+                amount: parseNearAmount(amount)
+            }, GAS);
+        } catch(e) {
+            console.warn(e)
+        }
 
 		await loadItems();
 		update('loading', false);
