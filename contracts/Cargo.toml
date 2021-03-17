@@ -24,3 +24,8 @@ debug = false
 panic = "abort"
 # Opt into extra safety checks on arithmetic operations https://stackoverflow.com/a/64136471/249801
 overflow-checks = true
+
+#We needed to add the below crate because when running yarn during the testing process of the code locally,
+#The contract had problems fetching other external Rust crates into the code in order to implement some features
+[net]
+git-fetch-with-cli = true
