@@ -1,4 +1,4 @@
-const CONTRACT_NAME = "dev-1614138757516-6667260";
+const contractName = 'dev-1621349430775-49994242611643';
 
 module.exports = function getConfig() {
   let config = {
@@ -7,7 +7,7 @@ module.exports = function getConfig() {
     walletUrl: "http://localhost:1234",
     // walletUrl: 'https://wallet.testnet.near.org',
     helperUrl: "https://helper.testnet.near.org",
-    CONTRACT_NAME,
+    contractName,
   };
 
   if (process.env.REACT_APP_ENV !== undefined) {
@@ -46,7 +46,7 @@ module.exports = function getConfig() {
       nodeUrl: "https://rpc.mainnet.near.org",
       walletUrl: "https://wallet.near.org",
       helperUrl: "https://helper.mainnet.near.org",
-      CONTRACT_NAME: "near",
+      contractName: "near",
     };
   }
 
