@@ -1,20 +1,20 @@
 #![deny(warnings)]
 use hex;
 use near_sdk::{
-    borsh::{ self, BorshDeserialize, BorshSerialize },
-    collections::{ UnorderedMap },
-    env, near_bindgen, AccountId, PublicKey, Balance, Promise,
-    json_types::{ U128, Base58PublicKey },
+    borsh::{self, BorshDeserialize, BorshSerialize},
+    collections::UnorderedMap,
+    env,
+    json_types::{Base58PublicKey, U128},
+    near_bindgen, AccountId, Balance, Promise, PublicKey,
 };
 use serde::Serialize;
 
 #[global_allocator]
 static ALLOC: near_sdk::wee_alloc::WeeAlloc = near_sdk::wee_alloc::WeeAlloc::INIT;
 
-const MINT_FEE:u128 = 1_000_000_000_000_000_000_000_000;
-const GUEST_MINT_LIMIT:u8 = 3;
+const MINT_FEE: u128 = 1_000_000_000_000_000_000_000_000;
+const GUEST_MINT_LIMIT: u8 = 3;
 pub type TokenId = u64;
-
 
 #[derive(Debug, Serialize, BorshDeserialize, BorshSerialize)]
 pub struct TokenData {
@@ -43,7 +43,10 @@ impl Default for NonFungibleTokenBasic {
 impl NonFungibleTokenBasic {
     #[init]
     pub fn new(owner_id: AccountId) -> Self {
-        assert!(env::is_valid_account_id(owner_id.as_bytes()), "Owner's account ID is invalid.");
+        assert!(
+            env::is_valid_account_id(owner_id.as_bytes()),
+            "Owner's account ID is invalid."
+        );
         assert!(!env::state_exists(), "Already initialized");
         Self {
             pubkey_minted: UnorderedMap::new(b"pubkey_minted".to_vec()),
@@ -78,9 +81,13 @@ impl NonFungibleTokenBasic {
         let deposit = env::attached_deposit();
         assert!(deposit == price, "deposit != price");
         // update proceeds balance
-        let mut balance = self.account_to_proceeds.get(&token_data.owner_id).unwrap_or(0);
+        let mut balance = self
+            .account_to_proceeds
+            .get(&token_data.owner_id)
+            .unwrap_or(0);
         balance = balance + deposit;
-        self.account_to_proceeds.insert(&token_data.owner_id, &balance);
+        self.account_to_proceeds
+            .insert(&token_data.owner_id, &balance);
         // transfer ownership
         token_data.owner_id = new_owner_id;
         token_data.price = U128(0);
@@ -100,7 +107,7 @@ impl NonFungibleTokenBasic {
     pub fn guest_mint(&mut self, owner_id: AccountId, metadata: String) -> TokenId {
         self.only_contract_owner();
 
-        let public_key:PublicKey = env::signer_account_pk().into();
+        let public_key: PublicKey = env::signer_account_pk().into();
         let num_minted = self.pubkey_minted.get(&public_key).unwrap_or(0) + 1;
         assert!(num_minted <= GUEST_MINT_LIMIT, "Out of free mints");
         self.pubkey_minted.insert(&public_key, &num_minted);
@@ -129,10 +136,10 @@ impl NonFungibleTokenBasic {
     }
 
     /// modifiers
-    fn only_owner(&mut self, account_id:AccountId) {
+    fn only_owner(&mut self, account_id: AccountId) {
         let signer = env::signer_account_id();
         if signer != account_id {
-            let implicit_account_id:AccountId = hex::encode(&env::signer_account_pk()[1..]);
+            let implicit_account_id: AccountId = hex::encode(&env::signer_account_pk()[1..]);
             if implicit_account_id != account_id {
                 env::panic(b"Attempt to call transfer on tokens belonging to another account.")
             }
@@ -140,7 +147,11 @@ impl NonFungibleTokenBasic {
     }
 
     fn only_contract_owner(&mut self) {
-        assert_eq!(env::signer_account_id(), self.owner_id, "Only contract owner can call this method.");
+        assert_eq!(
+            env::signer_account_id(),
+            self.owner_id,
+            "Only contract owner can call this method."
+        );
     }
 
     /// View Methods
@@ -156,7 +167,7 @@ impl NonFungibleTokenBasic {
     pub fn get_token_data(&self, token_id: TokenId) -> TokenData {
         match self.token_to_data.get(&token_id) {
             Some(token_data) => token_data,
-            None => env::panic(b"No token exists")
+            None => env::panic(b"No token exists"),
         }
     }
 
@@ -164,8 +175,6 @@ impl NonFungibleTokenBasic {
         self.token_id
     }
 }
-
-
 
 // use the attribute below for unit tests
 #[cfg(test)]
@@ -253,7 +262,7 @@ mod tests {
         context.signer_account_id = carol();
         testing_env!(context.clone());
         contract.set_price(token_id.clone(), MINT_FEE.into());
-        
+
         context.signer_account_id = alice();
         context.attached_deposit = MINT_FEE.into();
         testing_env!(context.clone());
