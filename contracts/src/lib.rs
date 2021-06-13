@@ -251,7 +251,7 @@ mod tests {
 
     #[test]
     fn mint_purchase_withdraw() {
-        let mut context = get_context(bob(), 0);
+        let mut context = get_context(bob(), 1000);
         context.attached_deposit = MINT_FEE.into();
         testing_env!(context.clone());
         let mut contract = NonFungibleTokenBasic::new(bob());
